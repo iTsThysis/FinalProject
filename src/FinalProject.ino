@@ -76,20 +76,6 @@ void calibration()
     }
 }
 
-void show()
-{
-    uint64_t reading = analogRead(tempSensor);
-    double voltage = (reading * 3.3) / 4095.0;
-    double temperature = (voltage - 0.5) * 100;
-    displaySetup();
-    int farenheit = temperature * 1.8 + 32;
-    display.print(temperature);
-    display.println("C");
-    display.print(farenheit);
-    display.print("F");
-    display.display();
-    delay(200);
-}
 
 void displaySetup()
 {
@@ -130,6 +116,13 @@ void loop()
     display.loop();
     ambientValue = proximitySensor.getAmbient();
     Blynk.virtualWrite(V0, ambientValue);
+    uint64_t reading = analogRead(tempSensor);
+    double voltage = (reading * 3.3) / 4095.0;
+    double temperature = (voltage - 0.5) * 100;
+    int farenheit = temperature * 1.8 + 32;
+    Blynk.virtualWrite(V4, temperature);
+    Blynk.virtualWrite(V5, farenheit);
+
     if (display.pressedA())
     {
         mode = true;
@@ -149,10 +142,16 @@ void loop()
     }
     if (mode == true)
     {
-        show();
         digitalWrite(red, LOW);
         digitalWrite(green, LOW);
         digitalWrite(blue, LOW);
+        displaySetup();
+        display.print(temperature);
+        display.println("C");
+        display.print(farenheit);
+        display.print("F");
+        display.display();
+        delay(200);
     }
     else if (mode == false)
     {
