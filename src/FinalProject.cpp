@@ -33,6 +33,8 @@ bool calibrate = false;
 bool minLight = true;
 bool maxLight = false;
 bool done = false;
+bool notifyBright = false;
+bool notifyLow =false;
 int minValue;
 int maxValue;
 unsigned int ambientValue;
@@ -194,23 +196,34 @@ void loop()
         else if (calibrate == true)
         {
             getAmbient();
+            if (notifyBright == true) {
+                Blynk.notify("Might want to check this out, ambient light is too high!");
+            } else if (notifyLow == true) {
+                Blynk.notify("Watch out, ambient light too low");
+            }
             if (ambientValue < maxValue && ambientValue > minValue)
             {
                 digitalWrite(red, LOW);
                 digitalWrite(green, HIGH);
                 digitalWrite(blue, LOW);
+                notifyBright = false;
+                notifyLow = false;
             }
             else if (ambientValue > maxValue)
             {
                 digitalWrite(red, HIGH);
                 digitalWrite(green, LOW);
                 digitalWrite(blue, LOW);
+                notifyBright = true;
+                notifyLow = false;
             }
             else if (ambientValue < minValue)
             {
                 digitalWrite(red, LOW);
                 digitalWrite(green, LOW);
                 digitalWrite(blue, HIGH);
+                notifyBright = false;
+                notifyLow = true;
             }
         }
     }
